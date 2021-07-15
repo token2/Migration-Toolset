@@ -109,6 +109,10 @@ for line in (line.strip() for line in fileinput.input(args.infile)):
              encoded2=encoded.decode('utf-8')
              remove("img/"+str(line_count+j)+".png")
              f2.write('TOTP Profile '+str(line_count+j)+':'+otp.name+"<br><img width=250  src='data:image/png;base64,"+encoded2+"'><pre>"+secret+"</pre><hr><br><br>")			 
+#empty input_qr.txt
+f = open('input_qr.txt', 'r+')
+f.truncate(0) # need '0' when using r+
+
 print(' ')			 
 print('Files have been generated:')
 print (args.htmlfile)			 
