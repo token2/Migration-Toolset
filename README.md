@@ -51,9 +51,9 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
   
   --fromimg : provide the path of the image file containing the screenshot of QR from Google Authenticator export
   
-  --moltofile : save exctracted data in file compatible with Molto-2 format. If file does not exist a new file will be created
+  --moltofile : save extracted data in file compatible with Molto-2 format. If file does not exist a new file will be created
   
-  --htmlfile : save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
+  --htmlfile : save extracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
   
 
  
