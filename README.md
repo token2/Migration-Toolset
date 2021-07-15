@@ -22,6 +22,7 @@ extract_otp_secret_keys-win.py --fromimg *png file* --moltofile *txt file*   --h
 extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   --htmlfile *html file*
 
   
+### Command line parameters
   
   --fromimg : provide the path of the image file containing the screenshot of QR from Google Authenticator export
   
@@ -42,8 +43,9 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
 
      sudo apt-get install zbar-tools
 
+*qrencode* - a tool used to create a QR code from text  by Kentaro Fukuchi ( http://fukuchi.org/works/qrencode/ ).  Installation using the following command:
 
-
+    sudo apt-get install qrencode
 
 
 
