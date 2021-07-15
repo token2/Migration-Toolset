@@ -58,6 +58,7 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
 ### Examples
 
 Windows - decode GA-QR.png contents to format for Molto2 bulk import
+
     extract_otp_secret_keys-win.py --fromimg C:\Temp\GA-QR.png  --moltofile C:\Temp\Molto2-import-totp.txt
     
     
