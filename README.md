@@ -24,7 +24,7 @@ extract_otp_secret_keys-win.py --fromimg *png file* --moltofile *txt file*   --h
 
 *qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
 
-*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer https://www.nirsoft.net/utils/qr_code_generator.html
+*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer (https://www.nirsoft.net/utils/qr_code_generator.html)
 
 
  
