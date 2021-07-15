@@ -21,8 +21,10 @@ extract_otp_secret_keys-win.py --fromimg *png file* --moltofile *txt file*   --h
   --htmlfile : save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
   
 **Note: the Windows version uses the following third-party executables:**
+
 *qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
 
+*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer https://www.nirsoft.net/utils/qr_code_generator.html
 
 
-**
+ 
