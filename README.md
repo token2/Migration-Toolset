@@ -7,7 +7,8 @@ Google Authenticator is still the most popular TOTP application used for 2FA. Th
 In this project, we will publish tools and scripts allowing you can benefit from this feature and transfer the accounts to a hardware token. You can use this both for backing up your TOTP profiles and transferring them completely to a hardware token. The main script is forked from https://github.com/scito/extract_otp_secret_keys 
 
 ## Packages used
-Python : the protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
+### Python 
+The protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
 
     pip install protobuf
 
@@ -18,6 +19,8 @@ Python : the protobuf package of Google for proto3 is required for running this 
 *qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
 
 *SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer (https://www.nirsoft.net/utils/qr_code_generator.html)
+
+Both can be downloaded from this repository or from the original websites.
 
 **Linux**
 
