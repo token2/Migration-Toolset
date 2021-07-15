@@ -11,8 +11,10 @@ In this project, we will publish tools and scripts allowing you can benefit from
 *Windows*
 
 
-extract_otp_secret_keys-win.py --fromimg <png file> 
+extract_otp_secret_keys-win.py --fromimg *png file* --moltofile *txt file*   --htmlfile *html file*
   
   
   --fromimg : provide the path of the image file containing the screenshot of QR from Google Authenticator export
+  --moltofile : save exctracted data in file compatible with Molto-2 format. If file does not exist a new file will be created
+  --htmlfile : save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
   
