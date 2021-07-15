@@ -9,7 +9,7 @@ In this project, we will publish tools and scripts allowing you can benefit from
 ## Packages used
 The protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
 
-`pip install protobuf`
+    pip install protobuf
 
 ## Usage syntax
 
