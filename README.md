@@ -8,6 +8,10 @@ In this project, we will publish tools and scripts allowing you can benefit from
 
 ##Usage syntax:
 ###Windows
+
+
 extract_otp_secret_keys-win.py --fromimg <png file> 
+  
+  
   --fromimg : provide the path of the image file containing the screenshot of QR from Google Authenticator export
   
