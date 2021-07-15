@@ -7,9 +7,11 @@ Google Authenticator is still the most popular TOTP application used for 2FA. Th
 In this project, we will publish tools and scripts allowing you can benefit from this feature and transfer the accounts to a hardware token. You can use this both for backing up your TOTP profiles and transferring them completely to a hardware token. The main script is forked from https://github.com/scito/extract_otp_secret_keys 
 
 ## Packages used
-The protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
+Python : the protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
 
     pip install protobuf
+
+Other packages : see below
 
 ## Usage syntax
 
