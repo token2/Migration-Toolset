@@ -54,6 +54,12 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
   --moltofile : save extracted data in file compatible with Molto-2 format. If file does not exist a new file will be created
   
   --htmlfile : save extracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
-  
+
+### Examples
+
+Windows - decode GA-QR.png contents to format for Molto2 bulk import
+    extract_otp_secret_keys-win.py --fromimg C:\Temp\GA-QR.png  --moltofile C:\Temp\Molto2-import-totp.txt
+    
+    
 
  
