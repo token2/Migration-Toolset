@@ -11,7 +11,27 @@ Python : the protobuf package of Google for proto3 is required for running this 
 
     pip install protobuf
 
-Other packages : see below
+### Other packages 
+#### Note: the  toolset uses the following third-party executables:
+**Windows**
+
+*qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
+
+*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer (https://www.nirsoft.net/utils/qr_code_generator.html)
+
+**Linux**
+
+*zbarimg* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/). Installation using the following command:
+
+     sudo apt-get install zbar-tools
+
+*qrencode* - a tool used to create a QR code from text  by Kentaro Fukuchi ( http://fukuchi.org/works/qrencode/ ).  Installation using the following command:
+
+    sudo apt-get install qrencode
+
+
+
+
 
 ## Usage syntax
 
@@ -32,23 +52,5 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
   
   --htmlfile : save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens 
   
-#### Note: the  toolset uses the following third-party executables:
-**Windows**
-
-*qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
-
-*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer (https://www.nirsoft.net/utils/qr_code_generator.html)
-
-**Linux
-
-*zbarimg* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/). Installation using the following command:
-
-     sudo apt-get install zbar-tools
-
-*qrencode* - a tool used to create a QR code from text  by Kentaro Fukuchi ( http://fukuchi.org/works/qrencode/ ).  Installation using the following command:
-
-    sudo apt-get install qrencode
-
-
 
  
