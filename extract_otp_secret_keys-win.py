@@ -23,9 +23,6 @@ from urllib.parse import parse_qs, urlencode, urlparse, quote
 from os import path, mkdir, system, remove
 from re import sub, compile as rcompile
 import generated_python.google_auth_pb2
-from tkinter import filedialog
-from tkinter import *
-from tkinter.ttk import *
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument('--verbose', '-v', help='verbose output', action='store_true')
 arg_parser.add_argument('--saveqr', '-s', help='save QR code(s) as images to the "qr" subfolder', action='store_true')
