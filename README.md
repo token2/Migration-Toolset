@@ -61,6 +61,8 @@ Windows - decode GA-QR.png contents to format for Molto2 bulk import
 
     extract_otp_secret_keys-win.py --fromimg C:\Temp\GA-QR.png  --moltofile C:\Temp\Molto2-import-totp.txt
     
-    
+Linux - decode GA-QR.png contents to html (list of QR codes ready for migration)
+
+    extract_otp_secret_keys-win.py --fromimg /tmp/GA-QR.png  --htmlfile /tmp/Molto2-import-totp.txt    
 
  
