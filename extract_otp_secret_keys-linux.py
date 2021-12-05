@@ -101,7 +101,7 @@ for line in (line.strip() for line in fileinput.input(args.infile)):
 		#Create html file with seed info in QR format
              keyURI="otpauth://totp/"+otp.name+"?secret="+secret#+"?issuer="+otp.issuer 
              #Generate QR code image			 
-             system ("qrencode "+ keyURI + " -o img/"+str(line_count+j)+".png")
+             system ("qrencode '"+ keyURI + "' -o img/"+str(line_count+j)+".png")
              encoded = base64.b64encode(open("img/"+str(line_count+j)+".png", "rb").read())
              encoded2=encoded.decode('utf-8')
              remove("img/"+str(line_count+j)+".png")
