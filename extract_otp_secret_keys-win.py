@@ -95,7 +95,7 @@ for line in (line.strip() for line in fileinput.input(args.infile)):
         if   args.moltofile:
          with open(args.moltofile, 'a') as f:
 		#Create text file with seed info
-             f.write(str(line_count+j)+'\t'+secret+'\tsha1\t6\t30\tyes\tyes\t'+otp.issuer+'\n')
+             f.write(str(line_count+j)+' '+secret+' sha1 6 30 yes yes '+otp.issuer+'\n')
         if   args.htmlfile:
          with open(args.htmlfile, 'a') as f2:
 		#Create html file with seed info in QR format
