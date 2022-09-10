@@ -10,44 +10,19 @@ More information is available here https://www.token2.swiss/site/page/how-to-tra
 
 ## Packages used
 ### Python 
-The protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 is recommended.
+The protobuf package of Google for proto3 is required for running this script. protobuf >= 3.14 < 3.21 is recommended.
 
-    pip install protobuf
+    pip install "protobuf<3.21"
 
 ### Other packages 
 #### Note: the  toolset uses the following third-party executables:
-**Windows**
+**Windows and Linux**
 
-*qrdecode.exe* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/)
-
-*SimpleCodeGenerator.exe* - used to create a QR code from text.  Created by  Nir Sofer (https://www.nirsoft.net/utils/qr_code_generator.html)
-
-Both can be downloaded from this repository or from the original websites.
-
-**Linux**
-
-*zbarimg* - used to decode the contents of the QR code to text. This is a part of Zbar Code Reader project (http://zbar.sourceforge.net/). Installation using the following command:
-
-     sudo apt-get install zbar-tools
-
-*qrencode* - a tool used to create a QR code from text  by Kentaro Fukuchi ( http://fukuchi.org/works/qrencode/ ).  Installation using the following command:
-
-    sudo apt-get install qrencode
-
-
-
-
+*qrscan.exe* - used to decode the contents of the QR code to text and to convert QR to svg. This is a part qrscan project (https://github.com/sayanarijit/qrscan)
 
 ## Usage syntax
 
-### Windows
-
-extract_otp_secret_keys-win.py --fromimg *png file* --moltofile *txt file*   --htmlfile *html file*
-
-### Linux
-
-extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   --htmlfile *html file*
-
+extract_otp_secret_keys.py --fromimg *png file* --moltofile *txt file*   --htmlfile *html file*
   
 ### Command line parameters
   
@@ -61,10 +36,13 @@ extract_otp_secret_keys-linux.py --fromimg *png file* --moltofile *txt file*   -
 
 Windows - decode GA-QR.png contents to format for Molto2 bulk import
 
-    python3 extract_otp_secret_keys-win.py --fromimg C:\Temp\GA-QR.png  --moltofile C:\Temp\Molto2-import-totp.txt
+    python3 extract_otp_secret_keys.py --fromimg C:\Temp\GA-QR.png  --moltofile C:\Temp\Molto2-import-totp.txt
     
 Linux - decode GA-QR.png contents to html (list of QR codes ready for migration)
 
-    python3 extract_otp_secret_keys-win.py --fromimg /tmp/GA-QR.png  --htmlfile /tmp/totp.html
+    python3 extract_otp_secret_keys.py --fromimg /tmp/GA-QR.png  --htmlfile /tmp/totp.html
 
+### Troubleshooting
+
+- If Molto-2 USB Config Tool doesn't like the image use the moltofile output. Format is "Slot Seed Algorithm OTPLength TimeStep yes yes Title". Just copy it by hand over.
  
