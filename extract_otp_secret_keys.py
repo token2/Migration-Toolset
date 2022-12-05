@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import argparse
 import base64
 import glob
@@ -156,6 +155,16 @@ for line in (line.strip() for line in otpauth_list):
                 # Create html file with seed info in QR format
                 keyURI = "otpauth://totp/"+otp.name+"?secret="+secret  # +"?issuer="+otp.issuer
                 # Generate QR code image
+                from qrcode import QRCode
+                import qrcode.image.svg
+                from io import BytesIO
+                qr = QRCode()
+                qr.add_data(keyURI)
+                img = qr.make_image(fill_color='black', back_color='white',image_factory=qrcode.image.svg.SvgImage)
+                buffered = BytesIO()
+                img.save(buffered)
+                qr_as_image_base64 = base64.b64encode(buffered.getvalue())
+                qr_as_image_base64=qr_as_image_base64.decode('utf-8')
                 f2.write('TOTP Profile '+str(line_count+j)+':'+otp.name +
                          "<br><img width=250 src='data:image/svg+xml;base64;utf-8,"+qr_as_image_base64+"'><pre>"+secret+"</pre><hr><br><br>")
 
