@@ -18,7 +18,7 @@ The protobuf package of Google for proto3 is required for running this script. p
 #### Note: the  toolset uses the following third-party executables:
 **Windows and Linux**
 
-*qrscan.exe* - used to decode the contents of the QR code to text and to convert QR to svg. This is a part qrscan project (https://github.com/sayanarijit/qrscan)
+*qrscan.exe* - used to decode the contents of the QR code to text and to convert QR to svg. This is a part qrscan project (https://github.com/sayanarijit/qrscan). For linux, use `pip install qrcode` to add the qrcode module
 
 ## Usage syntax
 
