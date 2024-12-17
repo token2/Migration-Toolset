@@ -153,7 +153,7 @@ for line in (line.strip() for line in otpauth_list):
         if args.htmlfile:
             with open(args.htmlfile, 'a') as f2:
                 # Create html file with seed info in QR format
-                keyURI = "otpauth://totp/"+otp.name+"?secret="+secret  # +"?issuer="+otp.issuer
+                keyURI = "otpauth://totp/"+str(line_count+j)+(otp.issuer if otp.issuer else otp.name)+"?secret="+secret  # +"?issuer="+otp.issuer
                 # Generate QR code image
                 from qrcode import QRCode
                 import qrcode.image.svg
