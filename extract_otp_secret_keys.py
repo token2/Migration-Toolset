@@ -14,43 +14,34 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import argparse
 import base64
-import glob
-import subprocess
+import fileinput
+import sys
 from urllib.parse import parse_qs, urlencode, urlparse, quote
-from os import name, path, remove
+from os import path, mkdir, system, remove
+from re import sub, compile as rcompile
 import generated_python.google_auth_pb2
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument(
-    '--verbose', '-v', help='verbose output', action='store_true')
-arg_parser.add_argument(
-    '--saveqr', '-s', help='save QR code(s) as images to the "qr" subfolder', action='store_true')
-arg_parser.add_argument(
-    '--printqr', '-p', help='print QR code(s) as text to the terminal', action='store_true')
-arg_parser.add_argument(
-    '--infile', help='file or - for stdin (default: -) with "otpauth-migration://..." URLs separated by newlines, lines starting with # are ignored')
-arg_parser.add_argument(
-    '--moltofile', help='save exctracted data in file compatible with Molto-2 format. If file does not exist a new file will be created.')
-arg_parser.add_argument(
-    '--htmlfile', help='save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens')
-arg_parser.add_argument(
-    '--fromimg', help='read otpauth-migration strings from a screenshot')
+arg_parser.add_argument('--verbose', '-v', help='verbose output', action='store_true')
+arg_parser.add_argument('--saveqr', '-s', help='save QR code(s) as images to the "qr" subfolder', action='store_true')
+arg_parser.add_argument('--printqr', '-p', help='print QR code(s) as text to the terminal', action='store_true')
+arg_parser.add_argument('--infile', help='file or - for stdin (default: -) with "otpauth-migration://..." URLs separated by newlines, lines starting with # are ignored')
+arg_parser.add_argument('--moltofile', help='save exctracted data in file compatible with Molto-2 format. If file does not exist a new file will be created.')
+arg_parser.add_argument('--htmlfile', help='save exctracted data in html file with QR codes for enrolling TOTP profiles to other apps or single profile tokens')
+arg_parser.add_argument('--fromimg', help='read otpauth-migration strings from a screenshot')
 args = arg_parser.parse_args()
 
 verbose = args.verbose
 
 # https://stackoverflow.com/questions/40226049/find-enums-listed-in-python-descriptor-for-protobuf
-
-
 def get_enum_name_by_number(parent, field_name):
     field_value = getattr(parent, field_name)
     return parent.DESCRIPTOR.fields_by_name[field_name].enum_type.values_by_number.get(field_value).name
 
-
 def convert_secret_from_bytes_to_base32_str(bytes):
     return str(base64.b32encode(otp.secret), 'utf-8').replace('=', '')
-
 
 def get_algorithm_name(otp):
     """Map protobuf algorithm enum to string name."""
@@ -61,8 +52,11 @@ def get_algorithm_name(otp):
         3: 'SHA512',
         4: 'MD5',
     }
-    return algo_map.get(otp.algorithm, 'SHA1')
-
+    try:
+        val = otp.algorithm
+    except AttributeError:
+        return 'SHA1'
+    return algo_map.get(val, 'SHA1')
 
 def get_digits(otp):
     """Map protobuf digit_count enum to actual digit count."""
@@ -71,141 +65,95 @@ def get_digits(otp):
         1: 6,
         2: 8,
     }
-    return digits_map.get(otp.digit_count, 6)
+    try:
+        val = otp.digit_count
+    except AttributeError:
+        try:
+            val = otp.digits
+        except AttributeError:
+            return 6
+    return digits_map.get(val, 6)
 
-
-def get_period(otp_url_params):
-    """Extract period from URL params or default to 30."""
-    return otp_url_params.get('period', 30)
-
-
-def is_windows():
-    return name == 'nt'
-
-
-# decode from image to text file
-if args.fromimg:
-    if is_windows():
-        qrscan = glob.glob('./qrscan/*/qrscan.exe', recursive=True)
-    else:
-        qrscan = glob.glob('./qrscan/*/qrscan', recursive=True)
-
-    if not qrscan:
-        raise "Couldn't find qrscan, cant decode image"
-    elif len(qrscan) > 1:
-        raise "Multiple qrscans found, did you add one manually?"
-
-    if args.htmlfile:
-        if path.exists(str(args.htmlfile)):
-            remove(str(args.htmlfile))
-        qrscan.append('--svg')
-        qrscan.append(str(args.htmlfile))
-    qrscan.append(str(args.fromimg))
-
-    otpauth_list = list()
-    for line in subprocess.check_output(qrscan).splitlines():
-        otpauth_list.append(line.decode("utf-8"))
-
-    print(type(otpauth_list))
-    print(otpauth_list)
-    for line in otpauth_list:
-        print(f"line: {line}")
-
-    qr_as_image_base64 = base64.b64encode(
-        open(str(args.htmlfile), "rb").read())
-    qr_as_image_base64 = qr_as_image_base64.decode('utf-8')
-    remove(str(args.htmlfile))
-
-elif args.infile:
-    otpauth_list = str(args.infile).splitlines()
-else:
-    raise "Please provide either --infile or --fromimg as source"
+#decode from image to text file
+if  args.fromimg:
+    system("zbarimg --raw "+args.fromimg+" > input_qr.txt ")
+    args.infile = "input_qr.txt"
 
 i = j = 0
 print('Starting the process')
-for line in (line.strip() for line in otpauth_list):
-    if verbose:
-        print(line)
-    if not line.startswith('otpauth-migration://'):
-        print('\nWARN: line is not a otpauth-migration:// URL\ninput file: {}\nline "{}"\nProbably a wrong file was given'.format(otpauth_list, line))
+for line in (line.strip() for line in fileinput.input(args.infile)):
+    if verbose: print(line)
+    if line.startswith('#') or line == '': continue
+    if not line.startswith('otpauth-migration://'): print('\nWARN: line is not a otpauth-migration:// URL\ninput file: {}\nline "{}"\nProbably a wrong file was given'.format(args.infile, line))
     parsed_url = urlparse(line)
     params = parse_qs(parsed_url.query)
     if not 'data' in params:
-        raise "result of qrscan looks invalid"
+        print('\nERROR: no data query parameter in input URL\ninput file: {}\nline "{}"\nProbably a wrong file was given'.format(args.infile, line))
+        sys.exit(1)
     data_encoded = params['data'][0]
     data = base64.b64decode(data_encoded)
     payload = generated_python.google_auth_pb2.MigrationPayload()
     payload.ParseFromString(data)
     i += 1
-    if verbose:
-        print('\n{}. Payload Line'.format(i), payload, sep='\n')
+    if verbose: print('\n{}. Payload Line'.format(i), payload, sep='\n')
     line_count = -1
-    # Count lines in Molto2 CSV export file
-    if args.moltofile:
-        if path.exists(args.moltofile):
-            file = open(args.moltofile, "r")
-            for line in file:
-                if line != "\n":
-                    line_count += 1
-            file.close()
-        else:
-            # Create new file with CSV header
-            with open(args.moltofile, 'w') as f:
-                f.write('profile,seed,title,algorithm,digits,period\n')
-            line_count = 0
+    #Count lines in Molto2 CSV export file
+    if   args.moltofile:
+     if  path.exists(args.moltofile):
+
+      file = open(args.moltofile, "r")
+
+      for line in file:
+       if line != "\n":
+        line_count += 1
+      file.close()
+     else:
+      # Create new file with CSV header
+      with open(args.moltofile, 'w') as f:
+       f.write('profile,seed,title,algorithm,digits,period\n')
+      line_count = 0
 
     # pylint: disable=no-member
     for otp in payload.otp_parameters:
         j += 1
 
-        if verbose:
-            print('\n{}. Secret Key'.format(j))
-        else:
-            print()
+        if verbose: print('\n{}. Secret Key'.format(j))
+        else: print()
         print('Name:   {}'.format(otp.name))
         secret = convert_secret_from_bytes_to_base32_str(otp.secret)
-        # print('Secret: {}'.format(secret))
-        if otp.issuer:
-            print('Issuer: {}'.format(otp.issuer))
+        #print('Secret: {}'.format(secret))
+        if otp.issuer: print('Issuer: {}'.format(otp.issuer))
         print('Type:   {}'.format(get_enum_name_by_number(otp, 'type')))
-        url_params = {'secret': secret}
-        if otp.type == 1:
-            url_params['counter'] = otp.counter
-        if otp.issuer:
-            url_params['issuer'] = otp.issuer
-        otp_url = 'otpauth://{}/{}?'.format('totp' if otp.type ==
-                                            2 else 'hotp', quote(otp.name)) + urlencode(url_params)
-        if args.moltofile:
-            with open(args.moltofile, 'a') as f:
-                # Create CSV file with seed info in Molto-2 format
-                algorithm = get_algorithm_name(otp)
-                digits = get_digits(otp)
-                period = 30  # Default TOTP period
-                title = otp.issuer if otp.issuer else otp.name
-                profile_num = line_count + j
-                f.write('{},{},{},{},{},{}\n'.format(
-                    profile_num, secret, title, algorithm, digits, period))
-        if args.htmlfile:
-            with open(args.htmlfile, 'a') as f2:
-                # Create html file with seed info in QR format
-                keyURI = "otpauth://totp/"+str(line_count+j)+(otp.issuer if otp.issuer else otp.name)+"?secret="+secret  # +"?issuer="+otp.issuer
-                # Generate QR code image
-                from qrcode import QRCode
-                import qrcode.image.svg
-                from io import BytesIO
-                qr = QRCode()
-                qr.add_data(keyURI)
-                img = qr.make_image(fill_color='black', back_color='white',image_factory=qrcode.image.svg.SvgImage)
-                buffered = BytesIO()
-                img.save(buffered)
-                qr_as_image_base64 = base64.b64encode(buffered.getvalue())
-                qr_as_image_base64=qr_as_image_base64.decode('utf-8')
-                f2.write('TOTP Profile '+str(line_count+j)+':'+otp.name +
-                         "<br><img width=250 src='data:image/svg+xml;base64;utf-8,"+qr_as_image_base64+"'><pre>"+secret+"</pre><hr><br><br>")
-
+        url_params = { 'secret': secret }
+        if otp.type == 1: url_params['counter'] = otp.counter
+        if otp.issuer: url_params['issuer'] = otp.issuer
+        otp_url = 'otpauth://{}/{}?'.format('totp' if otp.type == 2 else 'hotp', quote(otp.name)) + urlencode(url_params)
+        if   args.moltofile:
+         with open(args.moltofile, 'a') as f:
+          #Create CSV file with seed info in Molto-2 format
+          algorithm = get_algorithm_name(otp)
+          digits = get_digits(otp)
+          period = 30  # Default TOTP period
+          title = otp.issuer if otp.issuer else otp.name
+          f.write('{},{},{},{},{},{}\n'.format(line_count+j, secret, title, algorithm, digits, period))
+        if   args.htmlfile:
+         with open(args.htmlfile, 'a') as f2:
+          #Create html file with seed info in QR format
+          keyURI="otpauth://totp/"+otp.name+"?secret="+secret#+"?issuer="+otp.issuer
+          #Generate QR code image
+          system ("qrencode "+ keyURI + " -o img/"+str(line_count+j)+".png")
+          encoded = base64.b64encode(open("img/"+str(line_count+j)+".png", "rb").read())
+          encoded2=encoded.decode('utf-8')
+          remove("img/"+str(line_count+j)+".png")
+          f2.write('TOTP Profile '+str(line_count+j)+':'+otp.name+"<br><img width=250  src='data:image/png;base64,"+encoded2+"'><pre>"+secret+"</pre><hr><br><br>")
+#empty input_qr.txt only if it was created by --fromimg
+if args.fromimg and path.exists('input_qr.txt'):
+    f = open('input_qr.txt', 'r+')
+    f.truncate(0) # need '0' when using r+
+    f.close()
 print(' ')
 print('Files have been generated:')
 if args.htmlfile:
-    print(args.htmlfile)
+    print (args.htmlfile)
 if args.moltofile:
-    print(args.moltofile)
+    print (args.moltofile)
