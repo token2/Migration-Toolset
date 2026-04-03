@@ -52,6 +52,33 @@ def convert_secret_from_bytes_to_base32_str(bytes):
     return str(base64.b32encode(otp.secret), 'utf-8').replace('=', '')
 
 
+def get_algorithm_name(otp):
+    """Map protobuf algorithm enum to string name."""
+    algo_map = {
+        0: 'SHA1',    # ALGORITHM_UNSPECIFIED defaults to SHA1
+        1: 'SHA1',
+        2: 'SHA256',
+        3: 'SHA512',
+        4: 'MD5',
+    }
+    return algo_map.get(otp.algorithm, 'SHA1')
+
+
+def get_digits(otp):
+    """Map protobuf digit_count enum to actual digit count."""
+    digits_map = {
+        0: 6,   # DIGIT_COUNT_UNSPECIFIED defaults to 6
+        1: 6,
+        2: 8,
+    }
+    return digits_map.get(otp.digit_count, 6)
+
+
+def get_period(otp_url_params):
+    """Extract period from URL params or default to 30."""
+    return otp_url_params.get('period', 30)
+
+
 def is_windows():
     return name == 'nt'
 
@@ -113,16 +140,19 @@ for line in (line.strip() for line in otpauth_list):
     if verbose:
         print('\n{}. Payload Line'.format(i), payload, sep='\n')
     line_count = -1
-    # Count lines  in Molto2-export.txt
+    # Count lines in Molto2 CSV export file
     if args.moltofile:
         if path.exists(args.moltofile):
-
             file = open(args.moltofile, "r")
-
             for line in file:
                 if line != "\n":
                     line_count += 1
             file.close()
+        else:
+            # Create new file with CSV header
+            with open(args.moltofile, 'w') as f:
+                f.write('profile,seed,title,algorithm,digits,period\n')
+            line_count = 0
 
     # pylint: disable=no-member
     for otp in payload.otp_parameters:
@@ -147,9 +177,14 @@ for line in (line.strip() for line in otpauth_list):
                                             2 else 'hotp', quote(otp.name)) + urlencode(url_params)
         if args.moltofile:
             with open(args.moltofile, 'a') as f:
-                # Create text file with seed info
-                f.write(str(line_count+j)+' '+secret +
-                        ' sha1 6 30 yes yes '+otp.issuer+'\n')
+                # Create CSV file with seed info in Molto-2 format
+                algorithm = get_algorithm_name(otp)
+                digits = get_digits(otp)
+                period = 30  # Default TOTP period
+                title = otp.issuer if otp.issuer else otp.name
+                profile_num = line_count + j
+                f.write('{},{},{},{},{},{}\n'.format(
+                    profile_num, secret, title, algorithm, digits, period))
         if args.htmlfile:
             with open(args.htmlfile, 'a') as f2:
                 # Create html file with seed info in QR format
